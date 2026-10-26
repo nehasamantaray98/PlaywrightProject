@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 dotenv.config({ path: './env/.env'});
 const XLSX = require('xlsx');
 
-test.describe.only("verify xlsx file",()=>{
+test.describe("verify xlsx file",()=>{
    const workbook = XLSX.readFile('test-data/TestData.xlsx');
    const sheet = workbook.Sheets['Sheet1'];
    const rows = XLSX.utils.sheet_to_json(sheet);
