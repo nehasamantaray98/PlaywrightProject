@@ -19,7 +19,7 @@ pipeline {
         stage('Run Excel Login Tests') {
             steps {
                 bat 'if exist allure-results rmdir /s /q allure-results'
-                bat 'npx playwright test tests/loginTest.spec.js'
+                bat 'npx playwright test tests/loginTest.spec.js --project=chromium'
             }
         }
     }
