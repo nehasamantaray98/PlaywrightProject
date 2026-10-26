@@ -1,0 +1,55 @@
+
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                bat 'npm ci'
+                bat 'npx playwright install chromium'
+            }
+        }
+
+        stage('Run Excel Login Tests') {
+            steps {
+                bat 'if exist allure-results rmdir /s /q allure-results'
+                bat 'npx playwright test tests/loginTest.spec.js'
+            }
+        }
+    }
+
+    post {
+        always {
+            script {
+                // Publish Allure report
+                try {
+                    allure(
+                        results: [[path: 'allure-results']]
+                    )
+                } catch (err) {
+                    echo "Allure publishing failed: ${err}"
+                }
+
+                // Email build status and report links
+                emailext(
+                    to: 'nehasr406@gmail.com',
+                    subject: "Playwright Login Tests - ${currentBuild.currentResult} - Build #${env.BUILD_NUMBER}",
+                    mimeType: 'text/html',
+                    body: """
+                        <h2>Playwright Excel Login Test Results</h2>
+                        <p><b>Build:</b> ${env.BUILD_NUMBER}</p>
+                        <p><b>Status:</b> ${currentBuild.currentResult}</p>
+                        <p><a href="${env.BUILD_URL}">View Jenkins Build</a></p>
+                        <p><a href="${env.BUILD_URL}allure/">View Allure Report</a></p>
+                    """
+                )
+            }
+        }
+    }
+}
