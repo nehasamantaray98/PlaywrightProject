@@ -1,4 +1,3 @@
-
 pipeline {
     agent any
 
@@ -36,19 +35,23 @@ pipeline {
                     echo "Allure publishing failed: ${err}"
                 }
 
-                // Email build status and report links
-                emailext(
-                    to: 'nehasamantaray02@gmail.com',
-                    subject: "Playwright Login Tests - ${currentBuild.currentResult} - Build #${env.BUILD_NUMBER}",
-                    mimeType: 'text/html',
-                    body: """
-                        <h2>Playwright Excel Login Test Results</h2>
-                        <p><b>Build:</b> ${env.BUILD_NUMBER}</p>
-                        <p><b>Status:</b> ${currentBuild.currentResult}</p>
-                        <p><a href="${env.BUILD_URL}">View Jenkins Build</a></p>
-                        <p><a href="${env.BUILD_URL}allure/">View Allure Report</a></p>
-                    """
-                )
+                // Send build status email
+                try {
+                    emailext(
+                        to: 'nehasamantaray02@gmail.com',
+                        subject: "Playwright Login Tests - ${currentBuild.currentResult} - Build #${env.BUILD_NUMBER}",
+                        mimeType: 'text/html',
+                        body: """
+                            <h2>Playwright Excel Login Test Results</h2>
+                            <p><b>Build:</b> ${env.BUILD_NUMBER}</p>
+                            <p><b>Status:</b> ${currentBuild.currentResult}</p>
+                            <p><a href="${env.BUILD_URL}">View Jenkins Build</a></p>
+                            <p><a href="${env.BUILD_URL}allure/">View Allure Report</a></p>
+                        """
+                    )
+                } catch (err) {
+                    echo "Email sending failed: ${err}"
+                }
             }
         }
     }
