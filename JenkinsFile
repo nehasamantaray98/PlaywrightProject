@@ -38,7 +38,7 @@ pipeline {
 
                 // Email build status and report links
                 emailext(
-                    to: 'nehasr406@gmail.com',
+                    to: 'nehasamantaray02@gmail.com',
                     subject: "Playwright Login Tests - ${currentBuild.currentResult} - Build #${env.BUILD_NUMBER}",
                     mimeType: 'text/html',
                     body: """
